@@ -5,6 +5,9 @@ class Config:
     JSON_AS_ASCII = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    RESTX_JSON = {
+        'ensure_ascii': False,
+    }
 
 
 class DevConfig(Config):
