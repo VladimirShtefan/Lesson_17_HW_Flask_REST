@@ -6,7 +6,7 @@ from app.app import api
 genre_model = api.model(
     'Genre',
     {
-        'pk': fields.Integer(attribute='id'),
-        'name': fields.String(),
+        'pk': fields.Integer(attribute='id', required=True),
+        'name': fields.String(required=True, max_length=255),
     }
 )

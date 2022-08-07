@@ -8,14 +8,14 @@ from app.app import api
 movie_model = api.model(
     'Movie',
     {
-        'id': fields.Integer(),
-        'title': fields.String(),
-        'description': fields.String(),
-        'trailer': fields.String(),
+        'id': fields.Integer(required=True),
+        'title': fields.String(required=True, max_length=255),
+        'description': fields.String(max_length=255),
+        'trailer': fields.String(max_length=255),
         'year': fields.Integer(),
         'rating': fields.Float(),
-        'genre_id': fields.Integer(),
-        'director_id': fields.Integer(),
+        'genre_id': fields.Integer(required=True),
+        'director_id': fields.Integer(required=True),
         'genre': fields.Nested(genre_model),
         'director': fields.Nested(director_model),
     }
