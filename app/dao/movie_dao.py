@@ -5,7 +5,7 @@ from flask_sqlalchemy import BaseQuery
 
 class MovieDAO(BaseDAO):
     def get_movies_by_director_id(self, director_id: int) -> BaseQuery:
-        return self.session.query(self.model).filter(Movie.director_id == director_id).all()
+        return self.session.query(self.model).filter(Movie.director_id == director_id)
 
     def get_movies_by_genre_id(self, genre_id: int) -> BaseQuery:
         return self.session.query(self.model).filter(Movie.genre_id == genre_id)
