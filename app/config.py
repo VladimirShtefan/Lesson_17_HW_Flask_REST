@@ -8,6 +8,8 @@ class Config:
     RESTX_JSON = {
         'ensure_ascii': False,
     }
+    RESTX_VALIDATE = True
+    RESTX_MASK_SWAGGER = False
 
 
 class DevConfig(Config):

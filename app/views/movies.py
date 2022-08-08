@@ -1,7 +1,7 @@
 from flask_restx import Resource, Namespace
 
 from app.api.api_models.movies import movie_model
-from app.api.parsers import director_parser, genre_parser, movie_parser
+from app.api.parsers import movie_filter_parser, movie_model_parser
 from app.dao.models.movies import Movie
 from app.dao.base_dao import BaseDAO
 from app.dao.movie_dao import MovieDAO
@@ -12,52 +12,52 @@ movies_ns = Namespace('movies')
 
 @movies_ns.route('/')
 class MoviesView(Resource):
-    @movies_ns.marshal_list_with(movie_model, code=200, envelope='movies')
+    @movies_ns.expect(movie_filter_parser)
+    @movies_ns.marshal_list_with(movie_model, code=200)
     def get(self):
         """
-        get all movies
-        :return:
+        Get all movies
         """
-        return BaseDAO(Movie).get_all()
+        data = movie_filter_parser.parse_args()
+        result = MovieDAO(Movie).filter_movies(data)
+        if result:
+            return result, 200
+        return BaseDAO(Movie).get_all(), 200
 
-    @movies_ns.expect(movie_parser)
-    @movies_ns.response(code=201, description='Created')
+    @movies_ns.expect(movie_model_parser)
+    @movies_ns.marshal_list_with(movie_model, code=201, description='Created')
     @movies_ns.response(code=400, description='Bad request')
     @movies_ns.response(code=409, description='Record already exists')
     def post(self):
-        data = movie_parser.parse_args()
-        MovieDAO(Movie).add_new_movie(data)
-        return None, 201
+        """
+        Create movie
+        """
+        data = movie_model_parser.parse_args()
+        return BaseDAO(Movie).add_row(data), 201
 
 
 @movies_ns.route('/<int:mid>/')
 class MovieView(Resource):
-    @movies_ns.marshal_with(movie_model, code=200, envelope='movie')
-    def get(self, mid):
+    @movies_ns.marshal_with(movie_model, code=200)
+    def get(self, mid: int):
         """
-        get movie by id
-        :param mid:
-        :return:
+        Get movie by id
         """
-        return BaseDAO(Movie).get_one_by_id(mid)
+        return BaseDAO(Movie).get_one_by_id(mid), 200
 
-    @movies_ns.expect(movie_parser)
-    @movies_ns.marshal_with(movie_model, code=204, envelope='movies', description='Updated')
-    def put(self, mid):
-        data = movie_parser.parse_args()
-        result = MovieDAO(Movie).update_movie(mid, data)
-        return result
+    @movies_ns.expect(movie_model_parser)
+    @movies_ns.marshal_with(movie_model, code=200, description='Updated')
+    def put(self, mid: int):
+        """
+        Update movie
+        """
+        data = movie_model_parser.parse_args()
+        return MovieDAO(Movie).update_movie(mid, data), 200
 
     @movies_ns.response(code=204, description='Deleted')
-    def delete(self, mid):
-        MovieDAO(Movie).delete_movie(mid)
+    def delete(self, mid: int):
+        """
+        Delete movie
+        """
+        BaseDAO(Movie).delete_row(mid)
         return None, 204
-
-
-@movies_ns.route('/<int:director_id>/')
-class MovieByDirectorView(Resource):
-    @movies_ns.expect(director_parser)
-    @movies_ns.marshal_list_with(movie_model, code=200, envelope='test')
-    def get(self):
-        data = director_parser.parse_args()
-        return MovieDAO(Movie).get_movies_by_director_id(data['director_id']).all()
