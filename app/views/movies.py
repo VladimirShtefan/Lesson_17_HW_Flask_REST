@@ -16,7 +16,7 @@ class MoviesView(Resource):
         Get all movies
         """
         data = movie_filter_parser.parse_args()
-        return MovieDAO().get_all(**data), 200
+        return MovieDAO().filter_movies(**data), 200
 
     @movies_ns.expect(movie_model_parser)
     @movies_ns.marshal_list_with(movie_model, code=201, description='Created')
