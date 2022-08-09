@@ -1,14 +1,12 @@
 from typing import TypeVar, List, Generic
-from abc import ABCMeta
-
 
 from app.setup_db import db
 
-T = TypeVar('T', bound=ABCMeta)
+T = TypeVar('T', bound=db.Model)
 
 
 class BaseDAO(Generic[T]):
-    __model__ = ABCMeta
+    __model__ = db.Model
 
     def __init__(self):
         self.session = db.session
