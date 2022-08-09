@@ -11,8 +11,15 @@ class BaseDAO(Generic[T]):
     def __init__(self):
         self.session = db.session
 
-    def get_all(self) -> List[T]:
-        return self.session.query(self.__model__).all()
+    def get_all(self, **kwargs) -> List[T]:
+        director_id = kwargs.get('director_id')
+        genre_id = kwargs.get('genre_id')
+        movie_query = self.session.query(self.__model__)
+        if director_id:
+            movie_query = movie_query.filter(self.__model__.director_id == director_id)
+        if genre_id:
+            movie_query = movie_query.filter(self.__model__.genre_id == genre_id)
+        return movie_query.all()
 
     def get_one_by_id(self, id: int) -> T:
         return self.session.query(self.__model__).get_or_404(id)
@@ -27,3 +34,7 @@ class BaseDAO(Generic[T]):
         with self.session.begin():
             self.session.add(new_row)
         return new_row
+
+    def update_row(self, id: int, **kwargs) -> None:
+        self.session.query(self.__model__).filter_by(id=id).update(kwargs)
+        self.session.commit()

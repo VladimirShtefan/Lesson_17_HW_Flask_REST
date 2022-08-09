@@ -38,13 +38,13 @@ class DirectorView(Resource):
         return DirectorDAO().get_one_by_id(did), 200
 
     @director_ns.expect(name_model_parser)
-    @director_ns.marshal_with(director_model, code=200, description='Updated')
+    @director_ns.response(code=204, description='Updated')
     def put(self, did: int):
         """
         Update director
         """
         data = name_model_parser.parse_args()
-        return DirectorDAO().update_director(did, **data), 200
+        return DirectorDAO().update_row(did, **data), 204
 
     @director_ns.response(code=204, description='Deleted')
     def delete(self, did: int):

@@ -16,7 +16,7 @@ class MoviesView(Resource):
         Get all movies
         """
         data = movie_filter_parser.parse_args()
-        return MovieDAO().filter_movies(**data), 200
+        return MovieDAO().get_all(**data), 200
 
     @movies_ns.expect(movie_model_parser)
     @movies_ns.marshal_list_with(movie_model, code=201, description='Created')
@@ -40,13 +40,13 @@ class MovieView(Resource):
         return MovieDAO().get_one_by_id(mid), 200
 
     @movies_ns.expect(movie_model_parser)
-    @movies_ns.marshal_with(movie_model, code=200, description='Updated')
+    @movies_ns.response(code=204, description='Updated')
     def put(self, mid: int):
         """
         Update movie
         """
         data = movie_model_parser.parse_args()
-        return MovieDAO().update_movie(mid, **data), 200
+        return MovieDAO().update_row(mid, **data), 204
 
     @movies_ns.response(code=204, description='Deleted')
     def delete(self, mid: int):
